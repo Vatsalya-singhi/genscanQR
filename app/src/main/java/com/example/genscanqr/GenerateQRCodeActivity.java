@@ -1,22 +1,31 @@
 package com.example.genscanqr;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -26,6 +35,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import androidmads.library.qrgenearator.QRGContents;
@@ -39,6 +49,10 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
     private Button generateQRBtn;
     private Bitmap bitmap;
 
+    private ImageButton mic;
+    private SpeechRecognizer speechRecognizer;
+    private boolean micFlag = false ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +61,87 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
         qrCodeIV = findViewById(R.id.idIVQRCode);
         dataEdt = findViewById(R.id.idEdtData);
         generateQRBtn = findViewById(R.id.idBtnGenerateQR);
+
+        mic = findViewById(R.id.mic);
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+
+        Context context = this;
+
+        // check mic permission
+        micRecordPermission(context);
+
+        final Intent speechRecogniserIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(micFlag) {
+                    mic.setImageDrawable(getDrawable(R.drawable.ic_baseline_mic_24));
+                    // start listening
+                    speechRecognizer.startListening(speechRecogniserIntent);
+                } else {
+                    mic.setImageDrawable(getDrawable(R.drawable.ic_baseline_mic_off_24));
+                    // stop listening
+                    speechRecognizer.stopListening();
+                }
+
+                micFlag = !micFlag;
+            }
+        });
+
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+                Toast.makeText(context, "Listening now..", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+                Toast.makeText(context, "Synthesising speech now..", Toast.LENGTH_SHORT).show();
+                mic.setImageDrawable(getDrawable(R.drawable.ic_baseline_mic_off_24));
+                // stop listening
+                speechRecognizer.stopListening();
+                micFlag = false;
+            }
+
+            @Override
+            public void onError(int i) {
+                Toast.makeText(context, "Some problem occurred", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+                ArrayList<String> data = bundle.getStringArrayList(speechRecognizer.RESULTS_RECOGNITION);
+                dataEdt.setText(data.get(0));
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+                ArrayList<String> data = bundle.getStringArrayList(speechRecognizer.RESULTS_RECOGNITION);
+                dataEdt.setText(data.get(0));
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+
+            }
+        });
+
+
         generateQRBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
@@ -60,8 +155,8 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
                     display.getSize(point);
                     int width = point.x;
                     int height = point.y;
-                    int dimen = width<height ? width: height;
-                    dimen = dimen* 3/4;
+                    int dimen = (width < height) ? width: height;
+                    dimen = 3/4 * dimen;
 
                     QRGEncoder qrgEncoder = new QRGEncoder(dataEdt.getText().toString(), null, QRGContents.Type.TEXT,dimen);
                     try {
@@ -76,7 +171,6 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
             }
         });
 
-        Context context = this;
 
         qrCodeIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,4 +225,21 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
         return uri;
     }
 
+    private void micRecordPermission(Context context){
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

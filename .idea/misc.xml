@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Samridi/suas/mobileappdir/genscanQR/app/src/main/res/drawable/button_back.xml" value="0.181" />
-        <entry key="..\:/Users/Samridi/suas/mobileappdir/genscanQR/app/src/main/res/layout/activity_generate_qrcode.xml" value="0.1" />
+        <entry key="..\:/Users/Samridi/suas/mobileappdir/genscanQR/app/src/main/res/drawable/ic_baseline_mic_24.xml" value="0.1705" />
+        <entry key="..\:/Users/Samridi/suas/mobileappdir/genscanQR/app/src/main/res/drawable/ic_baseline_mic_none_24.xml" value="0.1705" />
+        <entry key="..\:/Users/Samridi/suas/mobileappdir/genscanQR/app/src/main/res/layout/activity_generate_qrcode.xml" value="0.25" />
         <entry key="..\:/Users/Samridi/suas/mobileappdir/genscanQR/app/src/main/res/layout/activity_home.xml" value="0.25" />
         <entry key="..\:/Users/Samridi/suas/mobileappdir/genscanQR/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/Samridi/suas/mobileappdir/genscanQR/app/src/main/res/layout/activity_scan_qrcode.xml" value="0.25" />

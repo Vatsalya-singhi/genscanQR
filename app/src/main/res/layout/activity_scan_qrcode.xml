@@ -26,6 +26,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@color/yellow"
+        android:textIsSelectable="true"
         android:textSize="18sp" />
 
 </RelativeLayout>

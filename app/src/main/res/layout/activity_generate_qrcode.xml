@@ -77,5 +77,18 @@
         android:text="Generate QR Code"
         android:textAllCaps="false" />
 
+    <ImageButton
+        android:id="@+id/mic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/idBtnGenerateQR"
+        android:layout_marginStart="150dp"
+        android:layout_marginEnd="150dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:padding="10dp"
+        android:background="@drawable/button_back"
+        android:src="@drawable/ic_baseline_mic_off_24" />
+
 
 </RelativeLayout>
